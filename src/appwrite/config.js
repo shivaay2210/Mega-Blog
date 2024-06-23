@@ -1,11 +1,11 @@
 import conf from "../conf/conf";
 import { Client, ID, Databases, Storage, Query } from "appwrite";
 
-
 export class Service {
     client = new Client();
     databases;
-    bucket;
+    bucket; // or storage 
+
     constructor() {
         this.client
             .setEndpoint(conf.appwriteUrl)
@@ -21,17 +21,17 @@ export class Service {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
-                slug, /* document id*/
+                slug, /* document id */
                 {
                     title, 
-                    content,
+                    body: content,
                     featuredImage,
                     status, 
                     userId
                 }
             )
         } catch (error) {
-            console.log(`Appwrite service : createPost : ${error}`);
+            console.log(`Appwrite service :: createPost :: ${error}`);
             throw error
         }
     }
@@ -44,7 +44,7 @@ export class Service {
                 slug, 
                 {
                     title,  
-                    content,
+                    body: content,
                     featuredImage,
                     status, 
                 }
@@ -64,7 +64,7 @@ export class Service {
             )
             return true;
         } catch (error) {
-            console.log(`Appwrite service : deletePost : ${error}`);
+            console.log(`Appwrite service :: deletePost :: ${error}`);
             return false;
         }
     }
@@ -77,12 +77,12 @@ export class Service {
                 slug
             )
         } catch (error) {
-            console.log(`Appwrite service : getPost : ${error}`);
+            console.log(`Appwrite service :: getPost :: ${error}`);
             return false
         }
     }
 
-    // if i go with listDocuments then it will also give that documents whose status is not active so here we need to work with queries
+    // if i write only listDocuments then it will also give documents whose status is not active so here we need to work with queries
     async getPosts(queries = [Query.equal("status", "active"), /* ho skta h aur queries ho multiple queries are allowed at same time */]) {
         try {
             return await this.databases.listDocuments(
@@ -95,6 +95,20 @@ export class Service {
             return false
         }
     }
+
+    // async getPosts(queries) {
+    //     try {
+    //         return await this.databases.listDocuments(
+    //             conf.appwriteDatabaseId,
+    //             conf.appwriteCollectionId,
+    //             queries
+    //         )
+    //     } catch (error) {
+    //         console.log("Appwrite service :: getPosts :: error :: ", error)
+    //         return false
+    //     }
+    // }
+
 
     // file upload service
     async uploadFile(file) {

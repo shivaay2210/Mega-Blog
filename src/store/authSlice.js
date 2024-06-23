@@ -17,9 +17,10 @@ const authSlice = createSlice({
         }, 
         logout: (state) => {
             state.status = false;
+            state.userData = null;
         }
     }
 })
 
-export const {login, logout} = authSlice.actions // actions login logout function ko bolte h, reducer function ko
+export const {login, logout} = authSlice.actions // actions login logout functions ko bolte h, reducer function ko
 export default authSlice.reducer; 

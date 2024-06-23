@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import './App.css'
@@ -17,25 +16,22 @@ function App() {
     authService.getCurrentUser()
       .then((userData) => {
         if(userData) {
+          console.log("userData ye lo", userData)
           dispatch(login({userData}));
-        }
-        else {
+        } else {
           dispatch(logout({userData}))
         }
       })
-      .finally(() => setLoading(false))
+      .finally(() => setLoading(false)) // it will surely run
   }, []);
   
-
   return !loading ? (
-    <div className='min-h-screen flex flex-wrap content-between bg-gray-400'> 
-      <div className='w-full block'>
+    <div className="flex min-h-screen flex-col justify-between"> 
         <Header />
         <main>
           <Outlet />
         </main>
         <Footer />
-      </div>
     </div>
   ) : (null)
 }
