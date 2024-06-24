@@ -1,70 +1,55 @@
-import React, {useCallback} from "react";
-import {useForm} from 'react-hook-form'
-import {Button, Select, Input, RTE} from "../index"
-import appwriteService from "../../appwrite/config"
+import React, { useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { Button, Input, RTE, Select } from "..";
+import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Loader } from "../index"
 
-export default function PostForm({post}) {
-    const {register, handleSubmit, watch, setValue, control, getValues} = useForm({
+export default function PostForm({ post }) {
+    const { register, handleSubmit, watch, setValue, control, getValues } = useForm({
         defaultValues: {
-            title: post?.title || '',
-            slug: post?.slug || '',
-            content: post?.content || '',
-            status: post?.status || ''
-        }
-    })
+            title: post?.title || "",
+            slug: post?.$id || "",
+            content: post?.content || "",
+            status: post?.status || "active",
+        },
+    });
+
     // kisi field ko continuosusly monitor karna ho toh we can use watch, we can add watch with any form
 
-    const navigate = useNavigate()
-    const userData = useSelector(state => state.user.userData)
-    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate();
+    const userData = useSelector((state) => state.auth.userData);
 
     const submit = async (data) => {
-        if(post) {
-            try {
-                const file = data.image[0] ? appwriteService.uploadFile(data.image[0]) : null
-    
-                if(file) {
-                    appwriteService.deleteFile(post.featuredImage)
-                }
-    
-                 const dbPost = await appwriteService.updatePost(post.$id, {
-                    ...data,
-                    featuredImage: file ? file.$id : undefined,
-                 })
-    
-                 if(dbPost) {
-                    navigate(`/post/${dbPost.$id}`)
-                 }
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false)
+        if (post) {
+            const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
+
+            if (file) {
+                appwriteService.deleteFile(post.featuredImage);
             }
 
+            const dbPost = await appwriteService.updatePost(post.$id, {
+                ...data,
+                featuredImage: file ? file.$id : undefined,
+            });
+
+            if (dbPost) {
+                navigate(`/post/${dbPost.$id}`);
+            }
         } else {
-            try {
-                const file = await appwriteService.uploadFile(data.image[0])
-                if (file) {
-                    const fileId = file.$id
-                    const dbPost = await appwriteService.createPost({
-                        ...data,
-                        featuredImage: fileId,
-                        userId: userData.$id,
-                    })
-                    if (dbPost) {
-                        navigate(`/post/${dbPost.$id}`)
-                    }
+            const file = await appwriteService.uploadFile(data.image[0]);
+
+            if (file) {
+                const fileId = file.$id;
+                data.featuredImage = fileId;
+                const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id });
+
+                if (dbPost) {
+                    navigate(`/post/${dbPost.$id}`);
                 }
-            } catch (err) {
-                console.log(err)
-            } finally {
-                setLoading(false)
             }
         }
-    }
+    };
 
     const slugTransform = useCallback((value) => {
         if (value && typeof value === "string")
@@ -72,26 +57,24 @@ export default function PostForm({post}) {
                 .trim()
                 .toLowerCase()
                 .replace(/[^a-zA-Z\d\s]+/g, "-")
-                .replace(/\s/g, "-")
+                .replace(/\s/g, "-");
 
-        return ""
-    }, [])
+        return "";
+    }, []);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const subscription = watch((value, { name }) => {
             if (name === "title") {
-                setValue("slug", slugTransform(value.title), {
-                    shouldValidate: true,
-                })
+                setValue("slug", slugTransform(value.title), { shouldValidate: true });
             }
-        })
+        });
 
-        return () => subscription.unsubscribe()
-    }, [[watch, slugTransform, setValue]])
+        return () => subscription.unsubscribe();
+    }, [watch, slugTransform, setValue]);
 
     return (
-        <form onSubmit={handleSubmit(submit)} className="flex-wrap md:flex">
-            <div className="px-2 md:w-2/3">
+        <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
+            <div className="w-2/3 px-2">
                 <Input
                     label="Title :"
                     placeholder="Title"
@@ -103,16 +86,13 @@ export default function PostForm({post}) {
                     placeholder="Slug"
                     className="mb-4"
                     {...register("slug", { required: true })}
-                    readOnly
+                    onInput={(e) => {
+                        setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true });
+                    }}
                 />
-                <RTE
-                    label="Content :"
-                    name="content"
-                    control={control}
-                    defaultValue={getValues("content")}
-                />
+                <RTE label="Content :" name="content" control={control} defaultValue={getValues("content")} />
             </div>
-            <div className="mt-4 px-2 md:mt-0 md:w-1/3">
+            <div className="w-1/3 px-2">
                 <Input
                     label="Featured Image :"
                     type="file"
@@ -121,11 +101,9 @@ export default function PostForm({post}) {
                     {...register("image", { required: !post })}
                 />
                 {post && (
-                    <div className="mb-4 w-full">
+                    <div className="w-full mb-4">
                         <img
-                            src={appwriteService.getFilePreview(
-                                post.featuredImage
-                            )}
+                            src={appwriteService.getFilePreview(post.featuredImage)}
                             alt={post.title}
                             className="rounded-lg"
                         />
@@ -137,19 +115,10 @@ export default function PostForm({post}) {
                     className="mb-4"
                     {...register("status", { required: true })}
                 />
-                <Button
-                    type="submit"
-                    bgColor={post ? "bg-green-500" : undefined}
-                    className="w-full"
-                >
+                <Button type="submit" bgColor={post ? "bg-green-500" : undefined} className="w-full">
                     {post ? "Update" : "Submit"}
                 </Button>
-                {loading && (
-                    <div className="flex justify-center">
-                        <Loader />
-                    </div>
-                )}
             </div>
         </form>
-    )
+    );
 }

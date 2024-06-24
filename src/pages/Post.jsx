@@ -41,7 +41,7 @@ export default function Post() {
                             <h1 className="text-3xl font-bold">{post.title}</h1>
                         </div>
                         <div className="mt-3 p-4 text-justify">
-                            {parse(post.body)}
+                            {parse(post.content)}
                         </div>
                     </div>
                     <div className=" h-fit basis-2/5">

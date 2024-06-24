@@ -24,12 +24,13 @@ export class Service {
                 slug, /* document id */
                 {
                     title, 
-                    body: content,
+                    content,
                     featuredImage,
                     status, 
                     userId
                 }
             )
+            console.log("successful")
         } catch (error) {
             console.log(`Appwrite service :: createPost :: ${error}`);
             throw error
@@ -44,7 +45,7 @@ export class Service {
                 slug, 
                 {
                     title,  
-                    body: content,
+                    content,
                     featuredImage,
                     status, 
                 }
