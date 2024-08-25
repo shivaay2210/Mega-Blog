@@ -1,6 +1,6 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, RTE, Select } from "..";
+import { Button, Input, Loader, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -20,8 +20,11 @@ export default function PostForm({ post }) {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
 
+    const [isUploading, setIsUploading] = useState(false)
+
     const submit = async (data) => {
         if (post) {
+            setIsUploading(true)
             const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
 
             if (file) {
@@ -32,11 +35,14 @@ export default function PostForm({ post }) {
                 ...data,
                 featuredImage: file ? file.$id : undefined,
             });
-
+            
             if (dbPost) {
                 navigate(`/post/${dbPost.$id}`);
             }
+
+            setIsUploading(false)
         } else {
+            setIsUploading(true)
             const file = await appwriteService.uploadFile(data.image[0]);
 
             if (file) {
@@ -48,6 +54,8 @@ export default function PostForm({ post }) {
                     navigate(`/post/${dbPost.$id}`);
                 }
             }
+
+            setIsUploading(false)
         }
     };
 
@@ -115,9 +123,20 @@ export default function PostForm({ post }) {
                     className="mb-4"
                     {...register("status", { required: true })}
                 />
-                <Button type="submit" bgColor={post ? "bg-green-500" : undefined} className="w-full hover:bg-blue-700">
-                    {post ? "Update" : "Submit"}
-                </Button>
+
+                {
+                    post ? (
+                        <Button type="submit" bgColor={post ? "bg-green-500" : undefined}   className="w-full hover:bg-blue-700">
+                            {isUploading ?  <div className="flex flex-row items-center justify-between w-7 h-7"> <Loader /> </div> : "Update"}
+                        </Button>
+
+                    ) : (
+                        <Button type="submit" bgColor={post ? "bg-green-500" : undefined} className="w-full hover:bg-blue-700">
+                            {isUploading ? <div className="flex flex-row items-center justify-center w-7 h-7"> <Loader /> </div> : "Submit"}
+                        </Button>
+                    )
+                }
+                
             </div>
         </form>
     );
