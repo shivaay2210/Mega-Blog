@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import appwriteService from "../appwrite/config";
 import {Container, PostCard} from '../components'
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
     const [posts, setPosts] = useState([])
+    const navigate = useNavigate()
 
     useEffect(() => {
         appwriteService.getPosts().then((posts) => {
@@ -12,6 +14,11 @@ function Home() {
             }
         })
     }, [])
+
+    const loginBtn = (e) => {
+        e.preventDefault();
+        navigate('/login')
+    }
   
     if (posts.length === 0) {
         return (
@@ -19,9 +26,9 @@ function Home() {
                 <Container>
                     <div className="flex flex-wrap">
                         <div className="p-2 w-full">
-                            <h1 className="text-2xl font-bold hover:text-gray-500">
-                                Login to read posts
-                            </h1>
+                            <button className="text-2xl font-bold text-white hover:text-slate-400 cursor-pointer" onClick={loginBtn}>
+                            Login to read posts
+                            </button>
                         </div>
                     </div>
                 </Container>

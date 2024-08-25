@@ -13,7 +13,7 @@ export default function RTE({ name, control, label, defaultValue = "" }) {
         control={control}
         render={({ field: { onChange } }) => (
           <Editor
-            apiKey="7zqkmtnoquj21wa20mem61ngyve1j1amprxz1xtmgsdmpox3"
+            apiKey={conf.tinymceApiKey}
             
             init={{
               plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount linkchecker',
