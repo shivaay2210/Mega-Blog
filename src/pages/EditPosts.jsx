@@ -9,17 +9,24 @@ function EditPosts() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        if(slug) {
-            appwriteService.getPost(slug).then((post) => {
-                if(post) {
-                    setPosts(post)
+        const fetchPost = async () => {
+            if (slug) {
+                try {
+                    const post = await appwriteService.getPost(slug);
+                    if (post) {
+                        setPosts(post);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch post:", error);
                 }
-            })
-        } else {
-            navigate('/')
-        }
-    }, [slug, navigate])
-    
+            } else {
+                navigate('/');
+            }
+        };
+
+        fetchPost();
+    }, [slug, navigate]);
+
   return post ? (
     <div className='py-8'>
         <Container>

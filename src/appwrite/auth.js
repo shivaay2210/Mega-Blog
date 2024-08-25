@@ -13,11 +13,10 @@ export class AuthService {
     }
 
     async createAccount({email, password, name}) {
-        // account creation fail bhi ho skta h 
         try {
             const userAccount = await this.account.create(ID.unique(), email, password, name)
             if(userAccount) {
-                // call another method --> that means if user account exits then login bhi karwa hi do
+                // call another method 
                 return this.login({email, password})
             } else {
                 return userAccount 
@@ -46,6 +45,8 @@ export class AuthService {
             console.log("Appwrite Service :: getCurrentUser :: ", error)
             throw error
         }
+
+        return null
     }
 
     async logout() {

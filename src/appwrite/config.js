@@ -30,7 +30,6 @@ export class Service {
                     userId
                 }
             )
-            console.log("successful")
         } catch (error) {
             console.log(`Appwrite service :: createPost :: ${error}`);
             throw error
@@ -47,7 +46,7 @@ export class Service {
                     title,  
                     content,
                     featuredImage,
-                    status, 
+                    status,
                 }
             )
         } catch (error) {

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import './App.css'
 import authService from './appwrite/auth';
 import {login, logout} from "./store/authSlice"
 import Footer from "./components/Footer/Footer"
@@ -16,7 +15,7 @@ function App() {
     authService.getCurrentUser()
       .then((userData) => {
         if(userData) {
-          console.log("userData ye lo", userData)
+          // console.log("userData ye lo", userData)
           dispatch(login({userData}));
         } else {
           dispatch(logout({userData}))
