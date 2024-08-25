@@ -36,6 +36,7 @@ export class Service {
         }
     }
 
+    
     async updatePost(slug, {title, content, featuredImage, status}) {
         try {
             return await this.databases.updateDocument(
@@ -54,6 +55,7 @@ export class Service {
             throw error
         }
     }
+
 
     async deletePost(slug) {
         try {
@@ -95,6 +97,7 @@ export class Service {
             return false
         }
     }
+
 
     // async getPosts(queries) {
     //     try {

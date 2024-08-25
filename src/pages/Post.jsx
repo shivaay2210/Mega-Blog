@@ -38,12 +38,12 @@ export default function Post() {
                 <div className="flex flex-col-reverse md:mx-20 md:flex-row lg:mx-40">
                     <div className="basis-3/5">
                         <div className="text-center">
-                            <h1 className="text-3xl font-bold">{post.title}</h1>
+                            <h1 className="text-3xl font-bold text-white">{post.title}</h1>
                         </div>
-                        <div className="mt-3 p-4 text-justify">
+                        <div className="mt-3 p-4 text-justify text-slate-200">
                             {parse(post.content)}
                         </div>
-                    </div>
+                    </div>  
                     <div className=" h-fit basis-2/5">
                         {isAuthor && (
                             <div className="mt-4 text-center">
